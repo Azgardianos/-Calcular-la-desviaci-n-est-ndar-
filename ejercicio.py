@@ -1,69 +1,64 @@
-import unittest
 import math
+import unittest
 
 class Estadistica:
     def media(self, lista):
         "Se verifica que cada elemento de la lista sea de tipo int o float"
-        if all(isinstance(x, (int, float)) for x in lista):
-            return sum(lista) / len(lista)
+        if (all((isinstance(x, int) or isinstance(x, float)) for x in lista) == True):
+            acumulado = 0
+            for x in lista:
+                acumulado = acumulado + x
+            return acumulado / len(lista)
         else:
-            raise ValueError("La función solamente admite números")
+            print("La función solamente admite números")
+            return 0
 
     def desviacionEstandar(self, lista):
-        if all(isinstance(x, (int, float)) for x in lista):
+        if (all((isinstance(x, int) or isinstance(x, float)) for x in lista) == True):
+            acumulado = 0
             media = self.media(lista)
-            acumulado = sum((x - media) ** 2 for x in lista)
+            for x in lista:
+                acumulado = acumulado + ((x - media) ** 2)
             return math.sqrt(acumulado / len(lista))
         else:
-            raise ValueError("La función solamente admite números.")
-
-# Creación de objetos
-operacion = Estadistica()
-
-# Manipulación de las funciones de los objetos
-lista = [9, 3, 8, 8, 5.6, 9, 8, 9, 18, 1.442677]
-print(f"Lista: {', '.join(str(x) for x in lista)}")
-print(f"Media: {operacion.media(lista)}")
-print(f"Desviación estándar: {operacion.desviacionEstandar(lista)}")
+            print("La función solamente admite números.")
+            return 0
 
 class TestEstadistica(unittest.TestCase):
     def setUp(self):
         self.operacion = Estadistica()
-
-    def TestMediaEnteros(self):
-        lista = [1, 2, 3, 4, 5]
+    
+    def test_media(self):
+        lista = [9, 3, 8, 8, 5.6, 9, 8, 9, 18, 1.442677]
         resultado = self.operacion.media(lista)
-        self.assertEqual(resultado, 3)
+        esperado = sum(lista) / len(lista)
+        self.assertAlmostEqual(resultado, esperado, places=5)
 
-    def TestMediaFloats(self):
-        lista = [1.5, 3.5, 9.5, 5.5, 2.5]
+    def test_media_con_valores_invalidos(self):
+        lista = [9, 3, 'a', 8, 5.6]
         resultado = self.operacion.media(lista)
-        self.assertAlmostEqual(resultado, 3.5)
-
-    def TestMediaMixta(self):
-        lista = [7, 9.5, 5, 6.5, 1]
-        resultado = self.operacion.media(lista)
-        self.assertAlmostEqual(resultado, 3.2)
-
-    def TestDEInvalidos(self):
-        lista = [1, 'a',5]
-        with self.assertRaises(ValueError):
-            self.operacion.media(lista)
-
-    def TestDEEnteros(self):
-        lista = [1, 2, 3, 4, 5]
+        self.assertEqual(resultado, 0)
+    
+    def test_desviacion_estandar(self):
+        lista = [9, 3, 8, 8, 5.6, 9, 8, 9, 18, 1.442677]
         resultado = self.operacion.desviacionEstandar(lista)
-        self.assertAlmostEqual(resultado, 1.4142135623730951)
+        media = sum(lista) / len(lista)
+        suma_cuadrados = sum((x - media) ** 2 for x in lista)
+        esperado = math.sqrt(suma_cuadrados / len(lista))
+        self.assertAlmostEqual(resultado, esperado, places=5)
 
-    def TestDEFloats(self):
-        lista = [2.5, 6.5, 3.5, 4.5, 8.5]
+    def test_desviacion_estandar_con_valores_invalidos(self):
+        lista = [9, 3, 'a', 8, 5.6]
         resultado = self.operacion.desviacionEstandar(lista)
-        self.assertAlmostEqual(resultado, 1.4142135623730951)
-
-    def TestDEValoresInvalidos(self):
-        lista = [1, 'a', 7]
-        with self.assertRaises(ValueError):
-            self.operacion.desviacionEstandar(lista)
+        self.assertEqual(resultado, 0)
 
 if __name__ == '__main__':
-   unittest.main()
+    # Ejecución de pruebas
+    unittest.main(exit=False)
+
+    # Creación de objetos y manipulación de funciones
+    operacion = Estadistica()
+    lista = [9, 3, 8, 8, 5.6, 9, 8, 9, 18, 1.442677]
+    print("Lista: " + ", ".join(str(x) for x in lista))
+    print("Media: " + str(operacion.media(lista)))
+    print("Desviación estándar: " + str(operacion.desviacionEstandar(lista)))
